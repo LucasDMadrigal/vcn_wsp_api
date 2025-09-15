@@ -69,6 +69,8 @@
 
 using Chat.Data;
 using Chat.Domain.Interfaces;
+using Chat.Services.Services;
+using Chat.Services.Services.ServiceImpl;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -96,6 +98,10 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 builder.Services.AddScoped<Chat.Domain.Interfaces.IMessageRepository, Chat.Data.Repositories.MessageRepository>();
 builder.Services.AddScoped<Chat.Domain.Interfaces.IConversationRepository, Chat.Data.Repositories.ConversationRepository>();
 builder.Services.AddSingleton<IMessageRepository, Chat.Data.Repositories.MessageRepository>();
+
+
+builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IMetaService, MetaService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
