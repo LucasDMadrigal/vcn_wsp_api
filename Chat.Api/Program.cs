@@ -104,7 +104,8 @@ builder.Services.AddScoped<IMetaService, MetaService>();
 
 builder.Services.AddControllers();
 builder.Services.AddSignalR(); // necesario
-
+// Habilitar HttpClientFactory
+builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
