@@ -1,4 +1,4 @@
-//using Chat.Api.Hubs;
+Ôªø//using Chat.Api.Hubs;
 //using Chat.Data;
 //using Chat.Domain.Interfaces;
 //using Chat.Services.Services;
@@ -43,7 +43,7 @@
 
 
 //var serverAddresses = app.Urls; // esto ya tiene las urls configuradas
-//Console.WriteLine("La API est· corriendo en:");
+//Console.WriteLine("La API est√° corriendo en:");
 //foreach (var address in serverAddresses)
 //{
 //    Console.WriteLine(address);
@@ -67,6 +67,7 @@
 
 //app.Run();
 
+using Chat.Api.Hubs;
 using Chat.Data;
 using Chat.Domain.Interfaces;
 using Chat.Services.Services;
@@ -76,7 +77,7 @@ using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ConfiguraciÛn de appsettings.json + Environment variables
+// Configuraci√≥n de appsettings.json + Environment variables
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
@@ -102,6 +103,8 @@ builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IMetaService, MetaService>();
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR(); // necesario
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -117,6 +120,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();
 
