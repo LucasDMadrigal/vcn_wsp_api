@@ -1,32 +1,43 @@
 ﻿using Chat.Services.Services;
+using Chat.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Api.Controllers
-{
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ConversationController : ControllerBase
     {
-        IConversationService _conversationService;
-
-        public ConversationController(IConversationService conversationService)
+        [ApiController]
+        [Route("api/[controller]")]
+        public class ConversationController : ControllerBase
         {
-            _conversationService = conversationService;
+            IConversationService _conversationService;
+
+            public ConversationController(IConversationService conversationService)
+            {
+                _conversationService = conversationService;
+            }
+
+            [HttpGet("{waId}")]
+            public async Task<IActionResult> GetConversationsByUserPhone([FromRoute] string waId)
+            {
+                var conversation = await _conversationService.GetByWaIDPhoneAsync(waId);
+                var convDto = new ConversationResponseDto();
+                convDto.Id = conversation.Id;
+                convDto.WaId = conversation.WaId;
+                convDto.Messages = conversation.Messages.Select(m => new MessageDto()
+                {
+                    Id = m.Id,
+                    ConversationId = m.ConversationId,
+                    From = m.From,
+                    To = m.To,
+                    WaId = m.WaId,
+                    Type = m.Type,
+                    Text = m.Text,
+                    Template = m.Template,
+                    Direction = m.Direction,
+                    Status = m.Status,
+                    SentAt = m.SentAt,
+                }).ToList();
+
+                return Ok(convDto);
+            }
         }
-
-        [HttpGet("{waId}")]
-        public IActionResult GetConversationsByUserPhone([FromRoute] string waId)
-       {
-           var conversation = _conversationService.GetByWaIDPhoneAsync(waId);
-
-            if (conversation == null)
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
-       }
     }
-}

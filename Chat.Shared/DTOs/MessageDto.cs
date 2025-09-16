@@ -1,15 +1,26 @@
-﻿namespace Chat.Shared.DTOs
+﻿using Chat.Shared.ApiMetaDTOs;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Chat.Shared.DTOs
 {
     public record MessageDto
     {
-        public string Id { get; init; }
-        public string ConversationId { get; init; }
-        public string From { get; init; }
-        public string To { get; init; }
-        public string Content { get; init; }
-        public MessageDirection Direction { get; init; }
-        public string Status { get; init; }
-        public DateTimeOffset SentAt { get; init; }
-        public string MetaMessageId { get; init; }
+        public string? Id { get; set; }
+        public string ConversationId { get; set; }
+        public string From { get; set; }
+        public string To { get; set; }
+        public string WaId { get; set; }
+        public string Type { get; set; }
+        public TextMessageDto Text { get; set; }
+        public TemplateMessageDto Template { get; set; }
+        public string Direction { get; set; } // inbound, outbound
+        public string Status { get; set; }
+        public DateTime SentAt { get; set; }
+        public string? MetaMessageId { get; set; }
+
+        // En lugar de BsonDocument, usamos Dictionary<string, object> para que JSON lo pueda serializar
+        public Dictionary<string, object>? MetaResponse { get; set; }
+        public Dictionary<string, object>? RawPayload { get; set; }
     }
 }

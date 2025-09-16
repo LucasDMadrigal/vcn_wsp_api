@@ -128,7 +128,7 @@ namespace Chat.Api.Controllers
                             Id = message.Id,
                             From = message.From,
                             To = message.To,
-                            Content = message.Text.Body,
+                            Text = message.Text,
                             Status = message.Status
                         };
 
