@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contexts\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Chat.Shared\Chat.Shared.csproj" />
     <ProjectReference Include="..\Chat.Domain\Chat.Domain.csproj" />
   </ItemGroup>

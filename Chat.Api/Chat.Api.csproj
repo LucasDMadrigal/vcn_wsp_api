@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Chat.Data\Chat.Data.csproj" />
     <ProjectReference Include="..\Chat.Services\Chat.Services.csproj" />
     <ProjectReference Include="..\Chat.Domain\Chat.Domain.csproj" />
