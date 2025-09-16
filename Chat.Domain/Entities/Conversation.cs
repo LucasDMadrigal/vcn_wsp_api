@@ -10,6 +10,8 @@ namespace Chat.Domain.Entities
         public string? Id { get; set; }
         public string UserPhone { get; set; } = string.Empty;
         public string WaId { get; set; } = string.Empty;
+        public BsonTimestamp closeTimestamp { get; set; }
+        public bool IsOpen { get; set; }
         public List<Message> Messages { get; set; } = new List<Message>();
 }
 }

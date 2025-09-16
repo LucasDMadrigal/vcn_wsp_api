@@ -19,13 +19,14 @@ namespace Chat.Services.Services.ServiceImpl
             var conversation = await _conversationRepository.GetByWaIDPhoneAsync(message.WaId);
 
             
-
-            if (conversation == null)
+             
+            if (conversation == null || conversation.IsOpen == false)
             {
                 conversation = new Conversation
                 {
                     UserPhone = message.To,
                     WaId = message.WaId,
+                    IsOpen = true,
                     Messages = new List<Message> { message }
                 };
 

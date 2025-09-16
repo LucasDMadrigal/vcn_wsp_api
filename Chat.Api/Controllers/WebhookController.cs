@@ -74,8 +74,6 @@ namespace Chat.Api.Controllers
                 }
             }
 
-            //_logger.LogInformation("📩 Inbound webhook: {json}", body.ToString());
-
             try
             {
                 var metaResponseObj = body.GetProperty("object");
@@ -87,42 +85,40 @@ namespace Chat.Api.Controllers
                 {
                     foreach (var m in messages.EnumerateArray())
                     {
-                        var from = m.GetProperty("from").GetString();                      // número origen
-                        var msgId = m.GetProperty("id").GetString();                       // wamid...
-                        var timestamp = m.GetProperty("timestamp").GetString();            // unix timestamp en string
-                        var type = m.GetProperty("type").GetString();                      // "text", "image", etc.
+                        var from = m.GetProperty("from").GetString();
+                        var msgId = m.GetProperty("id").GetString();
+                        var timestamp = m.GetProperty("timestamp").GetString();
+                        var type = m.GetProperty("type").GetString();
 
                         // body del texto si es type=text
                         var textBody = m.TryGetProperty("text", out var t)
                             ? t.GetProperty("body").GetString()
                             : null;
 
-                        // 🆕 Construyo el objeto Message
+                        
                         var message = new Message
                         {
-                            Id = ObjectId.GenerateNewId().ToString(),   // generar _id propio
-                            ConversationId = string.Empty,              // lo podés setear según tu lógica
+                            Id = ObjectId.GenerateNewId().ToString(),
+                            ConversationId = string.Empty,
                             From = from ?? "",
                             To = value.GetProperty("metadata").GetProperty("phone_number_id").GetString() ?? "",
                             WaId = from ?? "",
                             Type = type,
-                            Text = new TextMessageDto { Body = textBody ?? "" },   // ⚠️ asegurate que tu dto tenga Body
+                            Text = new TextMessageDto { Body = textBody ?? "" },
                             Template = null,
-                            Direction = "inbound",                      // porque viene del cliente hacia vos
+                            Direction = "inbound",
                             Status = "received",
                             SentAt = DateTimeOffset
                                         .FromUnixTimeSeconds(long.Parse(timestamp))
                                         .UtcDateTime,
                             MetaMessageId = msgId,
-                            MetaResponse = null,                        // todavía no tenés respuesta
-                            RawPayload = BsonDocument.Parse(m.ToString()) // guardás el JSON crudo del mensaje
+                            MetaResponse = null,                        
+                            RawPayload = BsonDocument.Parse(m.ToString()) 
                         };
 
-                        // 👉 Acá lo podés persistir con tu repositorio
+                        
                         await _conversationService.AddMessageAsync(message);
-                        //await _messageRepository.AddMessageAsync(message);
-
-                        // Y si querés notificar por SignalR
+                        
                         var dto = new MessageDto
                         {
                             Id = message.Id,
@@ -135,24 +131,6 @@ namespace Chat.Api.Controllers
                         await _hub.Clients.Group(from!).SendAsync("ReceiveMessage", dto);
                     }
                 }
-
-
-                //if (value.TryGetProperty("messages", out var messages))
-                //{
-                //    foreach (var m in messages.EnumerateArray())
-                //    {
-                //        var from = m.GetProperty("from").GetString();
-                //        var msgId = m.GetProperty("id").GetString();
-                //        var text = m.TryGetProperty("text", out var t) ? t.GetProperty("body").GetString() : "(no-text)";
-
-                //        var message = new Message();
-
-
-                //        var dto = new MessageDto();
-
-                //        await _hub.Clients.Group(from!).SendAsync("ReceiveMessage", dto);
-                //    }
-                //}
 
                 if (value.TryGetProperty("statuses", out var statuses))
                 {
@@ -182,16 +160,6 @@ namespace Chat.Api.Controllers
             {
                 _logger.LogError(ex, "Error parsing webhook body");
             }
-
-            
-
-            // Guardar en Mongo
-            //await _conversationService.AddMessageAsync(
-            //    to ?? "unknown",
-            //    jsonBody,
-            //    null, // metaMessageId se obtiene de la respuesta
-            //    JsonSerializer.Deserialize<object>(responseContent) ?? new { }
-            //);
             return Ok();
         }
 

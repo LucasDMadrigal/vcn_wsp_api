@@ -27,13 +27,22 @@ namespace Chat.Api.Controllers
         }
 
         [HttpPost("send")]
-        public async Task<IActionResult> SendMessage([FromBody] object body)
+        public async Task<IActionResult> SendMessage(
+            [FromBody] object body, 
+            [FromHeader(Name = "Authorization")] string authorizationHeader,
+            [FromHeader(Name = "meta-phone-number-id")] string metaPhoneNumberId,
+            [FromHeader(Name = "X-User-Name")] string registeredUser
+            )
         {
             var jsonBody = body.ToString();
             var metaUrl = _configuration["Meta:BaseUrl"];
-            var phoneNumberId = _configuration["Meta:PhoneNumberId"];
-            var token = _configuration["Meta:AccessToken"];
+            var phoneNumberId = metaPhoneNumberId;
+            var token = authorizationHeader.Substring("Bearer ".Length);
+            var user = registeredUser;
             var url = metaUrl+"/"+phoneNumberId+"/messages";
+
+            if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
+                return Unauthorized(new { Message = "Missing or invalid Authorization header" });
 
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -51,7 +60,7 @@ namespace Chat.Api.Controllers
             var newMessageSent = new Message();
 
             newMessageSent.MetaMessageId = responseBody.Messages?.FirstOrDefault()?.Id;
-            newMessageSent.From = "system";// Capturar el remitente de la respuesta
+            newMessageSent.From = string.IsNullOrEmpty(user) ? "System" : user;
             newMessageSent.Type = messageDto.Type;
             newMessageSent.Text = messageDto.Text;
             newMessageSent.Template = messageDto.Template;
@@ -62,11 +71,8 @@ namespace Chat.Api.Controllers
             newMessageSent.To = responseBody.Contacts?.FirstOrDefault()?.Input ?? "UNKNOWN";
             newMessageSent.WaId = responseBody.Contacts?.FirstOrDefault()?.WaId ?? "UNKNOWN";
 
-            Console.WriteLine("Response content: " + jsonBody);
-            //Console.WriteLine("Message sent: " +
-            //    JsonSerializer.Serialize(newMessageSent, new JsonSerializerOptions { WriteIndented = true }));
-
-            // Parsear el body para obtener el destinatario (to)
+            //Console.WriteLine("Response content: " + jsonBody);
+            
             using var doc = JsonDocument.Parse(jsonBody);
             var to = doc.RootElement.GetProperty("to").GetString();
 
