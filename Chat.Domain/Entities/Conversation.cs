@@ -13,5 +13,5 @@ namespace Chat.Domain.Entities
         public DateTime? closeTimestamp { get; set; }
         public bool IsOpen { get; set; }
         public List<Message> Messages { get; set; } = new List<Message>();
-    }
+}
 }

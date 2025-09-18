@@ -34,6 +34,7 @@ namespace Chat.Services.Services.ServiceImpl
             else
             {
                 conversation.Messages.Add(message);
+                conversation.closeTimestamp = message.SentAt.AddHours(24);
                 await _conversationRepository.UpdateAsync(conversation);
             }
         }
