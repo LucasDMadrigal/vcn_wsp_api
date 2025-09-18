@@ -25,16 +25,22 @@ namespace Chat.Services.Services.ServiceImpl
                     UserPhone = message.To,
                     WaId = message.WaId,
                     IsOpen = true,
-                    closeTimestamp = message.SentAt.AddHours(24),
                     Messages = new List<Message> { message }
                 };
 
+                if (message.Direction == "inbound")
+                {
+                    conversation.closeTimestamp = message.SentAt.AddHours(24);
+                }
                 await _conversationRepository.InsertAsync(conversation);
             }
             else
             {
                 conversation.Messages.Add(message);
-                conversation.closeTimestamp = message.SentAt.AddHours(24);
+                if (message.Direction == "inbound")
+                {
+                    conversation.closeTimestamp = message.SentAt.AddHours(24);
+                }
                 await _conversationRepository.UpdateAsync(conversation);
             }
         }
