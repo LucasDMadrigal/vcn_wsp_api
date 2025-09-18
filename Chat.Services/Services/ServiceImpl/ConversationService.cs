@@ -18,8 +18,6 @@ namespace Chat.Services.Services.ServiceImpl
         {
             var conversation = await _conversationRepository.GetConversationOpenByWaIDPhoneAsync(message.WaId);
 
-            
-             
             if (conversation == null)
             {
                 conversation = new Conversation
@@ -27,6 +25,7 @@ namespace Chat.Services.Services.ServiceImpl
                     UserPhone = message.To,
                     WaId = message.WaId,
                     IsOpen = true,
+                    closeTimestamp = message.SentAt.AddHours(24),
                     Messages = new List<Message> { message }
                 };
 
