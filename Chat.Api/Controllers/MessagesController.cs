@@ -1,6 +1,7 @@
 ﻿using Chat.Domain.Entities;
 using Chat.Services.Services;
 using Chat.Shared.ApiMetaDTOs;
+using Chat.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using System.Text;
@@ -14,15 +15,18 @@ namespace Chat.Api.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConversationService _conversationService;
+        private readonly IMessageService _messageService;
         private readonly IConfiguration _configuration;
 
         public MessagesController(
             IHttpClientFactory httpClientFactory,
             IConversationService conversationService,
+            IMessageService messageService,
             IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _conversationService = conversationService;
+            _messageService = messageService;
             _configuration = configuration;
         }
 
@@ -82,6 +86,34 @@ namespace Chat.Api.Controllers
 
 
             return StatusCode((int)response.StatusCode, responseContent);
+        }
+
+        [HttpGet ("{WaId}")]
+        public async Task<IActionResult> GetMessagesByWaId([FromRoute] string WaId)
+        {
+            var messages = await _messageService.GetMessagesAsync(WaId);
+
+            if (messages is null)
+                return NotFound();
+
+            var messagesDto = messages.Select(m => new MessageDto()
+            {
+                Id = m.Id,
+                ConversationId = m.ConversationId,
+                From = m.From,
+                To = m.To,
+                WaId = m.WaId,
+                Type = m.Type,
+                Text = m.Text,
+                Template = m.Template,
+                Direction = m.Direction,
+                Status = m.Status,
+                SentAt = m.SentAt,
+                MetaMessageId = m.MetaMessageId
+            }).ToList();
+
+            return Ok(messagesDto);
+            
         }
     }
 }

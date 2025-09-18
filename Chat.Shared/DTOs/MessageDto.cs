@@ -18,9 +18,5 @@ namespace Chat.Shared.DTOs
         public string Status { get; set; }
         public DateTime SentAt { get; set; }
         public string? MetaMessageId { get; set; }
-
-        // En lugar de BsonDocument, usamos Dictionary<string, object> para que JSON lo pueda serializar
-        public Dictionary<string, object>? MetaResponse { get; set; }
-        public Dictionary<string, object>? RawPayload { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace Chat.Services.Services
     {
         Task AddMessageAsync(Message message);
         Task<IEnumerable<Conversation>> GetConversationsAsync();
-        Task<Conversation> GetConversationAsync(string conversationId);
+        Task<List<Conversation>> GetConversationsAsync(string WaId);
         Task UpdateMessageStatusAsync(string metaMessageId, string status);
         Task<Conversation> GetByMetaMessageIdAsync(string metaMessageId);
         Task<Conversation> GetByWaIDPhoneAsync(string waId);

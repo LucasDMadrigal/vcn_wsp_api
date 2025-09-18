@@ -24,6 +24,6 @@ namespace Chat.Domain.Entities
 
         [BsonElement("metaResponse")]
         public BsonDocument? MetaResponse { get; set; }
-        public BsonDocument RawPayload { get; set; }
+        public BsonDocument? RawPayload { get; set; }
     }
 }

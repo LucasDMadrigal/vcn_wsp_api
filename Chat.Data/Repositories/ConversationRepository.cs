@@ -25,14 +25,28 @@ namespace Chat.Data.Repositories
             return await _conversations.Find(c => c.Messages.Any(m => m.MetaMessageId == metaMessageId)).FirstOrDefaultAsync();
         }
 
-        public async Task<Conversation?> GetByWaIDPhoneAsync(string waId)
+        public async Task<Conversation?> GetConversationOpenByWaIDPhoneAsync(string waId)
         {
-            return await _conversations.Find(c => c.WaId == waId).FirstOrDefaultAsync();
+            var conversation = await _conversations.Find(c => c.WaId == waId && c.IsOpen ).FirstOrDefaultAsync();
+
+            return conversation;
         }
 
         public async Task<IEnumerable<Conversation>> GetConversationsAsync()
         {
             return await _conversations.Find(_ => true).ToListAsync();
+        }
+
+        public Task<List<Conversation>> GetConversationsByWaIDPhoneAsync(string waId)
+        {
+            return _conversations.Find(c => c.WaId == waId).ToListAsync();
+        }
+
+        public async Task<List<Conversation>> GetListConversationsByWaIDPhoneAsync(string waId)
+        {
+            var conversations = await _conversations.Find(c => c.WaId == waId).ToListAsync();
+
+            return conversations;
         }
 
         public async Task InsertAsync(Conversation conversation)

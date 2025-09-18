@@ -101,6 +101,7 @@ builder.Services.AddSingleton<IMessageRepository, Chat.Data.Repositories.Message
 
 builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IMetaService, MetaService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 builder.Services.AddControllers();
 builder.Services.AddSignalR(); // necesario
