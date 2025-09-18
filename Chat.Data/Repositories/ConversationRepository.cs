@@ -27,7 +27,7 @@ namespace Chat.Data.Repositories
 
         public async Task<Conversation?> GetConversationOpenByWaIDPhoneAsync(string waId)
         {
-            var conversation = await _conversations.Find(c => c.WaId == waId && c.IsOpen ).FirstOrDefaultAsync();
+            var conversation = await _conversations.Find(c => c.WaId == waId && c.closeTimestamp > DateTime.UtcNow).FirstOrDefaultAsync();
 
             return conversation;
         }
