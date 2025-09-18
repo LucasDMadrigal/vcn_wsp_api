@@ -101,7 +101,7 @@ namespace Chat.Api.Controllers
                             Id = ObjectId.GenerateNewId().ToString(),
                             ConversationId = string.Empty,
                             From = from ?? "",
-                            To = value.GetProperty("metadata").GetProperty("phone_number_id").GetString() ?? "",
+                            To = value.GetProperty("metadata").GetProperty("display_phone_number").GetString() ?? "",
                             WaId = from ?? "",
                             Type = type,
                             Text = new TextMessageDto { Body = textBody ?? "" },
