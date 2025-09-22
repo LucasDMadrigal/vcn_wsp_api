@@ -53,6 +53,7 @@ namespace Chat.Api.Controllers
 
             var response = await client.PostAsync(url, new StringContent(jsonBody, Encoding.UTF8, "application/json"));
             var responseContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("Response content: " + responseContent);
             var responseBody = JsonSerializer.Deserialize<MessageSentMetaResponseDto>(responseContent);
             var messageDto = JsonSerializer.Deserialize<MessageSentDto>(
                 jsonBody,
