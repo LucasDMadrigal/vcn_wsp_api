@@ -88,8 +88,17 @@ namespace Chat.Api.Controllers
             // Guardar en Mongo
             await _conversationService.AddMessageAsync(newMessageSent);
 
+            var outboundMessage = new
+            {
+                To = newMessageSent.To,
+                From = "me",
+                Type = newMessageSent.Type,
+                Text = newMessageSent.Text?.Body,
+                Template = newMessageSent.Template
+            };
+
             await _hubContext.Clients.Group(newMessageSent.To) // el "to" sería el conversationId
-                .SendAsync("ReceiveMessage", newMessageSent.To , "me", newMessageSent.Text.Body);
+                .SendAsync("ReceiveMessage", outboundMessage);
 
             return StatusCode((int)response.StatusCode, responseContent);
         }
