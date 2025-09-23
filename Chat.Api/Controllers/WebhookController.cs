@@ -61,6 +61,7 @@ namespace Chat.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Receive([FromBody] JsonElement body)
         {
+            Console.WriteLine("POST /webhook recibido"+body);
             // Validate signature if header present
             if (!string.IsNullOrEmpty(_appSecret) && Request.Headers.TryGetValue("X-Hub-Signature-256", out var sigHeader))
             {

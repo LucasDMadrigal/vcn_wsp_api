@@ -1,8 +1,10 @@
-﻿using Chat.Domain.Entities;
+﻿using Chat.Api.Hubs;
+using Chat.Domain.Entities;
 using Chat.Services.Services;
 using Chat.Shared.ApiMetaDTOs;
 using Chat.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -17,9 +19,10 @@ namespace Chat.Api.Controllers
         private readonly IConversationService _conversationService;
         private readonly IMessageService _messageService;
         private readonly IConfiguration _configuration;
-
+        private readonly IHubContext<ChatHub> _hubContext;
         public MessagesController(
             IHttpClientFactory httpClientFactory,
+            IHubContext<ChatHub> hubContext,
             IConversationService conversationService,
             IMessageService messageService,
             IConfiguration configuration)
@@ -28,6 +31,7 @@ namespace Chat.Api.Controllers
             _conversationService = conversationService;
             _messageService = messageService;
             _configuration = configuration;
+            _hubContext = hubContext;
         }
 
         [HttpPost("send")]
@@ -84,7 +88,8 @@ namespace Chat.Api.Controllers
             // Guardar en Mongo
             await _conversationService.AddMessageAsync(newMessageSent);
 
-
+            await _hubContext.Clients.Group(newMessageSent.To) // el "to" sería el conversationId
+                .SendAsync("ReceiveMessage", newMessageSent.To , "me", newMessageSent.Text.Body);
 
             return StatusCode((int)response.StatusCode, responseContent);
         }
