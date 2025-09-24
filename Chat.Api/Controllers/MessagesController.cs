@@ -1,4 +1,5 @@
 ﻿using Chat.Api.Hubs;
+using Chat.Api.Mappers;
 using Chat.Domain.Entities;
 using Chat.Services.Services;
 using Chat.Shared.ApiMetaDTOs;
@@ -36,12 +37,15 @@ namespace Chat.Api.Controllers
 
         [HttpPost("send")]
         public async Task<IActionResult> SendMessage(
-            [FromBody] object body, 
+            //[FromBody] MessageDto messageDto, // 🚀 tipado directo
+            [FromBody] object body, // 🚀 tipado directo
             [FromHeader(Name = "Authorization")] string authorizationHeader,
             [FromHeader(Name = "meta-phone-number-id")] string metaPhoneNumberId,
             [FromHeader(Name = "X-User-Name")] string registeredUser
             )
         {
+            //var jsonBody = JsonSerializer.Serialize(messageDto);
+            //Console.WriteLine("Message: " + messageDto);
             var jsonBody = body.ToString();
             var metaUrl = _configuration["Meta:BaseUrl"];
             var phoneNumberId = metaPhoneNumberId;
@@ -59,7 +63,9 @@ namespace Chat.Api.Controllers
             var responseContent = await response.Content.ReadAsStringAsync();
             Console.WriteLine("Response content: " + responseContent);
             var responseBody = JsonSerializer.Deserialize<MessageSentMetaResponseDto>(responseContent);
-            var messageDto = JsonSerializer.Deserialize<MessageSentDto>(
+
+            Console.WriteLine("Response body: " + responseBody);
+            var messageSentDto= JsonSerializer.Deserialize<MessageSentDto>(
                 jsonBody,
                 new JsonSerializerOptions
                 {
@@ -70,9 +76,9 @@ namespace Chat.Api.Controllers
 
             newMessageSent.MetaMessageId = responseBody.Messages?.FirstOrDefault()?.Id;
             newMessageSent.From = string.IsNullOrEmpty(user) ? "System" : user;
-            newMessageSent.Type = messageDto.Type;
-            newMessageSent.Text = messageDto.Text;
-            newMessageSent.Template = messageDto.Template;
+            newMessageSent.Type = messageSentDto.Type;
+            newMessageSent.Text = messageSentDto.Text;
+            newMessageSent.Template = messageSentDto.Template;
             newMessageSent.Direction = "outbound";
             newMessageSent.Status = responseBody.Messages?.FirstOrDefault()?.MessageStatus ?? "UNKNOWN";
             newMessageSent.SentAt = DateTime.UtcNow;
@@ -80,25 +86,49 @@ namespace Chat.Api.Controllers
             newMessageSent.To = responseBody.Contacts?.FirstOrDefault()?.Input ?? "UNKNOWN";
             newMessageSent.WaId = responseBody.Contacts?.FirstOrDefault()?.WaId ?? "UNKNOWN";
 
-            //Console.WriteLine("Response content: " + jsonBody);
-            
-            using var doc = JsonDocument.Parse(jsonBody);
-            var to = doc.RootElement.GetProperty("to").GetString();
+            var messageDto = new MessageDto()
+            {
+                Id = responseBody.Messages?.FirstOrDefault()?.Id,
+                ConversationId = responseBody.Contacts?.FirstOrDefault()?.WaId ?? "UNKNOWN",
+                From = string.IsNullOrEmpty(user) ? "System" : user,
+                To = responseBody.Contacts?.FirstOrDefault()?.Input ?? "UNKNOWN",
+                WaId = responseBody.Contacts?.FirstOrDefault()?.WaId ?? "UNKNOWN",
+                Type = messageSentDto.Type,
+                Text = messageSentDto.Text,
+                Template = messageSentDto.Template,
+                Direction = "outbound",
+                Status = responseBody.Messages?.FirstOrDefault()?.MessageStatus ?? "UNKNOWN",
+                SentAt = DateTime.UtcNow
+            };
 
+            var meessageSignalR = MessageMapper.ToEntity(
+                messageDto,
+                string.IsNullOrEmpty(user) ? "System" : user,
+                responseBody.Contacts?.FirstOrDefault()?.Input ?? "UNKNOWN",
+                responseBody.Contacts?.FirstOrDefault()?.WaId ?? "UNKNOWN",
+                responseBody.Messages?.FirstOrDefault()?.MessageStatus ?? "UNKNOWN",
+                responseBody.Messages?.FirstOrDefault()?.Id
+            );
+            Console.WriteLine("Response content: " + jsonBody);
+
+            //using var doc = JsonDocument.Parse(jsonBody);
+            //var to = doc.RootElement.GetProperty("to").GetString();
+
+            //// Guardar en Mongo
+            //await _conversationService.AddMessageAsync(newMessageSent);
+
+            //// Notificar al grupo de SignalR con el DTO ya estructurado
+            //await _hubContext.Clients.Group(newMessageSent.To)
+            //    .SendAsync("ReceiveMessage", newMessageSent.WaId, newMessageSent.From, messageDto);
+
+
+            //return StatusCode((int)response.StatusCode, responseContent);
             // Guardar en Mongo
             await _conversationService.AddMessageAsync(newMessageSent);
 
-            var outboundMessage = new
-            {
-                To = newMessageSent.To,
-                From = "me",
-                Type = newMessageSent.Type,
-                Text = newMessageSent.Text?.Body,
-                Template = newMessageSent.Template
-            };
-
-            await _hubContext.Clients.Group(newMessageSent.To) // el "to" sería el conversationId
-                .SendAsync("ReceiveMessage", outboundMessage);
+            // 🔔 Notificar por SignalR con MessageDto consistente
+            await _hubContext.Clients.Group(meessageSignalR.To)
+                .SendAsync("ReceiveMessage", meessageSignalR.To, meessageSignalR.From, meessageSignalR);
 
             return StatusCode((int)response.StatusCode, responseContent);
         }
