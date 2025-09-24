@@ -119,18 +119,23 @@ namespace Chat.Api.Controllers
 
                         
                         await _conversationService.AddMessageAsync(message);
-                        
+
                         var dto = new MessageDto
                         {
                             Id = message.Id,
                             From = message.From,
                             To = message.To,
                             Text = message.Text,
-                            Status = message.Status
+                            Status = message.Status,
+                            Type = message.Type,
+                            Direction = "inbound",
+                            SentAt = message.SentAt
                         };
 
-                        await _hub.Clients.Group(from!).SendAsync("ReceiveMessage", dto);
+                        await _hub.Clients.Group(from!)
+                            .SendAsync("ReceiveMessage", from, "inbound", dto);
                     }
+                
                 }
 
                 if (value.TryGetProperty("statuses", out var statuses))
