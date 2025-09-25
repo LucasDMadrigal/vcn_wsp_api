@@ -121,10 +121,19 @@ namespace Chat.Api.Controllers
             return StatusCode((int)response.StatusCode, responseContent);
         }
 
-        [HttpGet ("{WaId}")]
-        public async Task<IActionResult> GetMessagesByWaId([FromRoute] string WaId)
+        [HttpGet]
+        public async Task<IActionResult> GetMessagesByWaId([FromQuery] string? WaId, [FromQuery] string? ClientId)
         {
-            var messages = await _messageService.GetMessagesAsync(WaId);
+            var messages = new List<Message>();
+
+            if (!string.IsNullOrEmpty(ClientId) && string.IsNullOrEmpty(WaId))
+            {
+                messages = await _messageService.GetMessagesByClientIdAsync(ClientId);
+            }
+            if (!string.IsNullOrEmpty(WaId) && string.IsNullOrEmpty(ClientId))
+            {
+                messages = await _messageService.GetMessagesAsync(WaId);
+            }
 
             if (messages is null)
                 return NotFound();
@@ -149,5 +158,35 @@ namespace Chat.Api.Controllers
             return Ok(messagesDto);
             
         }
+        
+        //[HttpGet]
+        //public async Task<IActionResult> GetMessagesByCLientId([FromQuery] string ClientId)
+        //{
+        //    //var messages = await _messageService.GetMessagesAsync();
+        //    var messages = await _messageService.GetMessagesByClientIdAsync(ClientId);
+        //    if (messages is null)
+        //        return NotFound();
+
+        //    var messagesDto = messages.Select(m => new MessageDto()
+        //    {
+        //        Id = m.Id,
+        //        ClientId = m.ClientId,
+        //        ConversationId = m.ConversationId,
+        //        From = m.From,
+        //        To = m.To,
+        //        WaId = m.WaId,
+        //        Type = m.Type,
+        //        Text = m.Text,
+        //        Template = m.Template,
+        //        Direction = m.Direction,
+        //        Status = m.Status,
+        //        SentAt = m.SentAt,
+        //        MetaMessageId = m.MetaMessageId
+        //    }).ToList();
+
+        //    return Ok(messagesDto);
+            
+        //}
+
     }
 }

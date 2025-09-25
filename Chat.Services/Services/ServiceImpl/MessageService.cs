@@ -25,5 +25,19 @@ namespace Chat.Services.Services.ServiceImpl
 
             return messages;
         }
+
+        public async Task<List<Message>> GetMessagesByClientIdAsync(string clientId)
+        {
+            var conversations = await _conversationRepository.GetListConversationsByClientIdPhoneAsync(clientId);
+
+            var messages = new List<Message>(); // Return the list of conversations
+
+            foreach (var conversation in conversations)
+            {
+                messages.AddRange(conversation.Messages);
+            }
+
+            return messages;
+        }
     }
 }

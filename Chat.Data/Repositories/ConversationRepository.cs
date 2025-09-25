@@ -48,6 +48,11 @@ namespace Chat.Data.Repositories
             return _conversations.Find(c => c.WaId == waId).ToListAsync();
         }
 
+        public Task<List<Conversation>> GetListConversationsByClientIdPhoneAsync(string clientId)
+        {
+            return _conversations.Find(c => c.ClientId == clientId).ToListAsync();
+        }
+
         public async Task<List<Conversation>> GetListConversationsByWaIDPhoneAsync(string waId)
         {
             var conversations = await _conversations.Find(c => c.WaId == waId).ToListAsync();

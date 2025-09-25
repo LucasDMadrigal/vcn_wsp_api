@@ -5,6 +5,7 @@ namespace Chat.Domain.Interfaces
     public interface IConversationRepository
     {
         Task<Conversation> GetConversationOpenByWaIDPhoneAsync(string waId);
+        Task<List<Conversation>> GetListConversationsByClientIdPhoneAsync(string clientId);
         Task<List<Conversation>> GetListConversationsByWaIDPhoneAsync(string waId);
         Task<Conversation> GetByIdAsync(string id);
         Task<Conversation> GetByMetaMessageIdAsync(string metaMessageId);
