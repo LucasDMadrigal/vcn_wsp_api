@@ -24,6 +24,7 @@ namespace Chat.Services.Services.ServiceImpl
                 {
                     UserPhone = message.To,
                     WaId = message.WaId,
+                    ClientId = message.ClientId,
                     IsOpen = true,
                     Messages = new List<Message> { message }
                 };
@@ -32,10 +33,6 @@ namespace Chat.Services.Services.ServiceImpl
                 {
                     conversation.closeTimestamp = message.SentAt.AddHours(24);
                 }
-                //if (message.Type == "template")
-                //{
-                //    conversation.closeTimestamp = message.SentAt.AddHours(24);
-                //}
                 await _conversationRepository.InsertAsync(conversation);
             }
             else
@@ -51,6 +48,12 @@ namespace Chat.Services.Services.ServiceImpl
                 }
                 await _conversationRepository.UpdateAsync(conversation);
             }
+        }
+
+        public Task<Conversation> GetByClientIdAsync(string clientId)
+        {
+            var conversation = _conversationRepository.GetByClientIdAsync(clientId);
+            return conversation;
         }
 
         public  Task<Conversation> GetByMetaMessageIdAsync(string metaMessageId)

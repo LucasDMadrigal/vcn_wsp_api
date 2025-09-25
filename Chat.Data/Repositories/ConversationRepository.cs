@@ -15,6 +15,12 @@ namespace Chat.Data.Repositories
             _conversations = database.GetCollection<Conversation>("Conversations");
         }
 
+        public async Task<Conversation> GetByClientIdAsync(string clientId)
+        {
+            var conversation = await _conversations.Find(c => c.ClientId == clientId).FirstOrDefaultAsync();
+            return conversation;
+        }
+
         public async Task<Conversation?> GetByIdAsync(string id)
         {
             return await _conversations.Find(c => c.Id == id).FirstOrDefaultAsync();

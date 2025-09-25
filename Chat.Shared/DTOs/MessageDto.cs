@@ -7,6 +7,7 @@ namespace Chat.Shared.DTOs
     public record MessageDto
     {
         public string? Id { get; set; }
+        public string? ClientId { get; set; } = "";
         public string ConversationId { get; set; }
         public string From { get; set; }
         public string To { get; set; }

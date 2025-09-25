@@ -45,8 +45,6 @@ namespace Chat.Api.Controllers
             [FromHeader(Name = "X-Client-Id")] string clientId
             )
         {
-            //var jsonBody = JsonSerializer.Serialize(messageDto);
-            //Console.WriteLine("Message: " + messageDto);
             var jsonBody = body.ToString();
             var metaUrl = _configuration["Meta:BaseUrl"];
             var phoneNumberId = metaPhoneNumberId;
@@ -116,7 +114,7 @@ namespace Chat.Api.Controllers
             // Guardar en Mongo
             await _conversationService.AddMessageAsync(newMessageSent);
 
-            // 🔔 Notificar por SignalR con MessageDto consistente
+            // Notificar por SignalR con MessageDto consistente
             await _hubContext.Clients.Group(meessageSignalR.To)
                 .SendAsync("ReceiveMessage", meessageSignalR.To, meessageSignalR.From, meessageSignalR);
 
@@ -134,6 +132,7 @@ namespace Chat.Api.Controllers
             var messagesDto = messages.Select(m => new MessageDto()
             {
                 Id = m.Id,
+                ClientId = m.ClientId,
                 ConversationId = m.ConversationId,
                 From = m.From,
                 To = m.To,

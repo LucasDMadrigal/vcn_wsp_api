@@ -11,5 +11,6 @@ namespace Chat.Services.Services
         Task UpdateMessageStatusAsync(string metaMessageId, string status);
         Task<Conversation> GetByMetaMessageIdAsync(string metaMessageId);
         Task<Conversation> GetByWaIDPhoneAsync(string waId);
+        Task<Conversation> GetByClientIdAsync(string clientId);
     }
 }

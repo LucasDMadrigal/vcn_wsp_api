@@ -8,6 +8,7 @@ namespace Chat.Domain.Entities
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
+        public string ClientId { get; set; } = string.Empty;
         public string UserPhone { get; set; } = string.Empty;
         public string WaId { get; set; } = string.Empty;
         public DateTime? closeTimestamp { get; set; }

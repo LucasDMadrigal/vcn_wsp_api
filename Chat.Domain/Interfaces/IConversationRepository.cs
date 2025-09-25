@@ -8,6 +8,7 @@ namespace Chat.Domain.Interfaces
         Task<List<Conversation>> GetListConversationsByWaIDPhoneAsync(string waId);
         Task<Conversation> GetByIdAsync(string id);
         Task<Conversation> GetByMetaMessageIdAsync(string metaMessageId);
+        Task<Conversation> GetByClientIdAsync(string clientId);
         Task InsertAsync(Conversation conversation);
         Task UpdateAsync(Conversation conversation);
         Task<IEnumerable<Conversation>> GetConversationsAsync();
