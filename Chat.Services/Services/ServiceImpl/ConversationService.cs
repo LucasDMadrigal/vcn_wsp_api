@@ -28,16 +28,24 @@ namespace Chat.Services.Services.ServiceImpl
                     Messages = new List<Message> { message }
                 };
 
-                if (message.Direction == "inbound")
+                if (message.Direction == "inbound" || message.Type == "template")
                 {
                     conversation.closeTimestamp = message.SentAt.AddHours(24);
                 }
+                //if (message.Type == "template")
+                //{
+                //    conversation.closeTimestamp = message.SentAt.AddHours(24);
+                //}
                 await _conversationRepository.InsertAsync(conversation);
             }
             else
             {
                 conversation.Messages.Add(message);
-                if (message.Direction == "inbound")
+                if (message.Direction == "inbound" || message.Type == "template")
+                {
+                    conversation.closeTimestamp = message.SentAt.AddHours(24);
+                }
+                if(message.Type == "template")
                 {
                     conversation.closeTimestamp = message.SentAt.AddHours(24);
                 }

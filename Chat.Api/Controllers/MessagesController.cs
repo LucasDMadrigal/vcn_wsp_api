@@ -111,18 +111,6 @@ namespace Chat.Api.Controllers
             );
             Console.WriteLine("Response content: " + jsonBody);
 
-            //using var doc = JsonDocument.Parse(jsonBody);
-            //var to = doc.RootElement.GetProperty("to").GetString();
-
-            //// Guardar en Mongo
-            //await _conversationService.AddMessageAsync(newMessageSent);
-
-            //// Notificar al grupo de SignalR con el DTO ya estructurado
-            //await _hubContext.Clients.Group(newMessageSent.To)
-            //    .SendAsync("ReceiveMessage", newMessageSent.WaId, newMessageSent.From, messageDto);
-
-
-            //return StatusCode((int)response.StatusCode, responseContent);
             // Guardar en Mongo
             await _conversationService.AddMessageAsync(newMessageSent);
 
