@@ -41,7 +41,8 @@ namespace Chat.Api.Controllers
             [FromBody] object body, // 🚀 tipado directo
             [FromHeader(Name = "Authorization")] string authorizationHeader,
             [FromHeader(Name = "meta-phone-number-id")] string metaPhoneNumberId,
-            [FromHeader(Name = "X-User-Name")] string registeredUser
+            [FromHeader(Name = "X-User-Name")] string registeredUser,
+            [FromHeader(Name = "X-Client-Id")] string clientId
             )
         {
             //var jsonBody = JsonSerializer.Serialize(messageDto);
@@ -76,6 +77,7 @@ namespace Chat.Api.Controllers
 
             newMessageSent.MetaMessageId = responseBody.Messages?.FirstOrDefault()?.Id;
             newMessageSent.From = string.IsNullOrEmpty(user) ? "System" : user;
+            newMessageSent.ClientId = string.IsNullOrEmpty(clientId) ? "UNKNOWN" : clientId;
             newMessageSent.Type = messageSentDto.Type;
             newMessageSent.Text = messageSentDto.Text;
             newMessageSent.Template = messageSentDto.Template;
