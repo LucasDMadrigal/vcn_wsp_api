@@ -158,35 +158,6 @@ namespace Chat.Api.Controllers
             return Ok(messagesDto);
             
         }
-        
-        //[HttpGet]
-        //public async Task<IActionResult> GetMessagesByCLientId([FromQuery] string ClientId)
-        //{
-        //    //var messages = await _messageService.GetMessagesAsync();
-        //    var messages = await _messageService.GetMessagesByClientIdAsync(ClientId);
-        //    if (messages is null)
-        //        return NotFound();
-
-        //    var messagesDto = messages.Select(m => new MessageDto()
-        //    {
-        //        Id = m.Id,
-        //        ClientId = m.ClientId,
-        //        ConversationId = m.ConversationId,
-        //        From = m.From,
-        //        To = m.To,
-        //        WaId = m.WaId,
-        //        Type = m.Type,
-        //        Text = m.Text,
-        //        Template = m.Template,
-        //        Direction = m.Direction,
-        //        Status = m.Status,
-        //        SentAt = m.SentAt,
-        //        MetaMessageId = m.MetaMessageId
-        //    }).ToList();
-
-        //    return Ok(messagesDto);
-            
-        //}
 
     }
 }

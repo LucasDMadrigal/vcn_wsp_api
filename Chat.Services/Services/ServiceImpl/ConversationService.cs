@@ -79,6 +79,11 @@ namespace Chat.Services.Services.ServiceImpl
             return _conversationRepository.GetConversationsByWaIDPhoneAsync(WaId);
         }
 
+        public async Task<List<string>> GetDistinctWaIdConversationsAsync()
+        {
+            return await _conversationRepository.GetDistinctWaIdConversations();
+        }
+
         public async Task UpdateMessageStatusAsync(string metaMessageId, string status)
         {
             await _messageRepository.UpdateMessageStatusAsync(metaMessageId, status);

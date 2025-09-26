@@ -14,5 +14,6 @@ namespace Chat.Domain.Interfaces
         Task UpdateAsync(Conversation conversation);
         Task<IEnumerable<Conversation>> GetConversationsAsync();
         Task <List<Conversation>> GetConversationsByWaIDPhoneAsync(string waId);
+        Task<List<string>> GetDistinctWaIdConversations();
     }
 }

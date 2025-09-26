@@ -73,6 +73,7 @@ namespace Chat.Api.Controllers
                 {
                     Id = c.Id,
                     WaId = c.WaId,
+                    ClientId = c.ClientId,
                     Messages = c.Messages.Select(m => new MessageDto()
                     {
                         Id = m.Id,
@@ -89,6 +90,14 @@ namespace Chat.Api.Controllers
                     }).ToList()
                 }).ToList();
                 return Ok(convDto);
+            }
+
+            [HttpGet("AllWaId")]
+            public async Task<IActionResult> GetAllUnicWaIdConversations()
+            {
+                var conversationWaIds = await _conversationService.GetDistinctWaIdConversationsAsync();
+
+                return Ok(conversationWaIds);
             }
         }
 }
