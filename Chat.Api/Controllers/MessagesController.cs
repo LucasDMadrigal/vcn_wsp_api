@@ -44,8 +44,12 @@ namespace Chat.Api.Controllers
             [FromHeader(Name = "X-User-Name")] string registeredUser,
             [FromHeader(Name = "X-Client-Id")] string clientId
             )
-        {
+        {   
             var jsonBody = body.ToString();
+            //
+            Console.WriteLine("jsonBody");
+            //
+
             var metaUrl = _configuration["Meta:BaseUrl"];
             var phoneNumberId = metaPhoneNumberId;
             var token = authorizationHeader.Substring("Bearer ".Length);
