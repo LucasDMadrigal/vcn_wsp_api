@@ -74,6 +74,7 @@ namespace Chat.Api.Controllers
                     Id = c.Id,
                     WaId = c.WaId,
                     ClientId = c.ClientId,
+                    IsOpen = c.IsOpen,
                     Messages = c.Messages.Select(m => new MessageDto()
                     {
                         Id = m.Id,
